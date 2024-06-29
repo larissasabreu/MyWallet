@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { db } from './db.js' 
 import bcrypt from 'bcrypt';
+import { v4 as uuid } from 'uuid';
 
 export async function signUp (req, res) {
     const {name, email, password} = req.body;    
@@ -52,10 +53,21 @@ export async function Login (req, res) {
         return res.status(422).send(errors);
     }
 
+
     // login
         const user = await db.collection('users').findOne({ email });
         if (user && bcrypt.compareSync(password, user.password)) {
-            return res.send("logado!")
+            // sessão
+
+            const token = uuid();
+            const sessao = { 
+                token: token,
+                userId: user._id
+            }
+            await db.collection("sessao").insertOne(sessao);
+
+            return res.send(token)
+            
         } else {
             return res.send("Usuário ou senha não correspondentes!")
         }
