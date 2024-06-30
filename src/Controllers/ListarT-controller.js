@@ -1,6 +1,7 @@
 import { db } from '../config/db.js' 
 
 export async function FindTransactions (req, res) {
+    // paginação
     const page = req.query.page || 1;
     const limite = 10; 
     const inicio = (page - 1) * limite;

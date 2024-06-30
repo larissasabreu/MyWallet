@@ -5,6 +5,7 @@ import { ObjectId } from 'mongodb';
 dotenv.config();
 
 export async function validateToken (req, res, next) {
+        // header
         const authorization = req.headers.authorization;
         const token = authorization?.replace("Bearer ", "");
           if (!token) {
@@ -12,7 +13,8 @@ export async function validateToken (req, res, next) {
           }
       
         try {
-            jwt.verify(token, process.env.JWT_SECRET, async (error, decoded) => {
+                // validação do usuario
+                jwt.verify(token, process.env.JWT_SECRET, async (error, decoded) => {
                 if (error) return res.status(401)
                   
                 const user = await db.collection("users").findOne({ 
