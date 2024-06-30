@@ -1,6 +1,6 @@
 import { db } from '../config/db.js' 
 import bcrypt from 'bcrypt';
-import { v4 as uuid } from 'uuid';
+import jwt from 'jsonwebtoken'
 
 export async function signUp (req, res) {
     const {name, email, password} = req.body;    
@@ -30,15 +30,11 @@ export async function Login (req, res) {
     // login
         const user = await db.collection('users').findOne({ email });
         if (user && bcrypt.compareSync(password, user.password)) {
-            // sessão
-            const token = uuid();
-            const sessao = { 
-                token: token,
-                userId: user._id
-            }
-            await db.collection("sessao").insertOne(sessao);
 
-            return res.send(token)
+    // sessão
+        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET,
+        {expiresIn: 86400})
+        return res.send(token)
             
         } else {
             return res.send("Usuário ou senha não correspondentes!")
