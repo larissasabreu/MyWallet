@@ -1,9 +1,16 @@
 import { db } from '../config/db.js' 
 
 export async function FindTransactions (req, res) {
+    const page = req.query.page || 1;
+    const limite = 10; 
+    const inicio = (page - 1) * limite;
 
     try {
-        const result = await db.collection("transactions").find().toArray()
+        const result = await db.collection("transactions").find()
+        .skip(inicio)
+        .limit(limite)
+        .toArray();
+        
         res.status(200).send(result)
 
         } catch (err) {
